@@ -78,10 +78,10 @@ storage: list[dict] = [
 
 # CRUD
 def add_student(student: dict) -> dict | None:
-    if not (2 <= len(student) <= 3):
+    if len(student) != 3:
         return None
 
-    if not student.get("name") or not student.get("marks"):
+    if not student.get("name"):
         return None
     else:
         # action
