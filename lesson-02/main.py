@@ -117,14 +117,10 @@ def search_student(student_id: int) -> None:
 def show_student(student_id: int) -> None:
     filtered_data = [s for s in storage if s.get('id') == student_id]
     if filtered_data:
+        info = "=========================\n"
         for elem in filtered_data:
-            info = "=========================\n"
             for key, value in elem.items():
                 info += f"{key.capitalize()}: {value}\n"
-            # info = ("=========================\n"
-            #         f"Student: {elem.get('id', 'N/A')}"
-            #         f"{
-            #         "
             info += "=========================\n"
         print(f"Student: \n{info}")
     else:
