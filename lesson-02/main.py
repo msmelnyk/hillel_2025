@@ -115,13 +115,12 @@ def search_student(student_id: int) -> None:
 
 
 def show_student(student_id: int) -> None:
-    filtered_data = [s for s in storage if s.get('id') == student_id]
+    filtered_data = next((s for s in storage if s.get('id') == student_id), None)
     if filtered_data:
         info = "=========================\n"
-        for elem in filtered_data:
-            for key, value in elem.items():
-                info += f"{key.capitalize()}: {value}\n"
-            info += "=========================\n"
+        for key, value in filtered_data.items():
+            info += f"{key.capitalize()}: {value}\n"
+        info += "=========================\n"
         print(f"Student: \n{info}")
     else:
         print(f"Student {student_id} not found")
