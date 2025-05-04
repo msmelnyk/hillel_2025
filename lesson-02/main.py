@@ -78,7 +78,7 @@ storage: list[dict] = [
 
 # CRUD
 def add_student(student: dict) -> dict | None:
-    if len(student) != 2:
+    if not (2 <= len(student) <= 3):
         return None
 
     if not student.get("name") or not student.get("marks"):
@@ -114,20 +114,39 @@ def search_student(student_id: int) -> None:
     print(f"Student {student_id} not found")
 
 
+def show_student(student_id: int) -> None:
+    filtered_data = [s for s in storage if s.get('id') == student_id]
+    if filtered_data:
+        for elem in filtered_data:
+            info = "=========================\n"
+            for key, value in elem.items():
+                info += f"{key.capitalize()}: {value}\n"
+            # info = ("=========================\n"
+            #         f"Student: {elem.get('id', 'N/A')}"
+            #         f"{
+            #         "
+            info += "=========================\n"
+        print(f"Student: \n{info}")
+    else:
+        print(f"Student {student_id} not found")
+
+
 def ask_student_payload() -> dict:
     ask_prompt = (
         "Enter student's payload data using text template: "
-        "John Doe;1,2,3,4,5\n"
-        "where 'John Doe' is a full name and [1,2,3,4,5] are marks.\n"
+        "John Doe;John Doe is 18 y.o. Interests: math\n"
+        "where 'John Doe' is a full name"
+        "and 'John Doe is 18 y.o. Interests: math' are optional info about student.\n"
         "The data must be separated by ';'"
     )
 
     def parse(data) -> dict:
-        name, raw_marks = data.split(";")
+        name, raw_marks, details = data.split(";")
 
         return {
             "name": name,
-            "marks": [int(item) for item in raw_marks.replace(" ", "").split(",")],
+            "marks": [],
+            "info": details | "",
         }
 
     user_data: str = input(ask_prompt)
@@ -135,8 +154,14 @@ def ask_student_payload() -> dict:
 
 
 def student_management_command_handle(command: str):
-    if command == "show":
+    if command == "show students":
         show_students()
+    elif command == "show student":
+        student_id: str = input("\nEnter student's ID: ")
+        if student_id:
+            show_student(student_id=int(student_id))
+        else:
+            print("Student's name is required to search")
     elif command == "add":
         data = ask_student_payload()
         if data:
@@ -154,7 +179,7 @@ def student_management_command_handle(command: str):
 
 def handle_user_input():
     OPERATIONAL_COMMANDS = ("quit", "help")
-    STUDENT_MANAGEMENT_COMMANDS = ("show", "add", "search")
+    STUDENT_MANAGEMENT_COMMANDS = ("show students", "show student", "add", "search")
     AVAILABLE_COMMANDS = (*OPERATIONAL_COMMANDS, *STUDENT_MANAGEMENT_COMMANDS)
 
     HELP_MESSAGE = (
@@ -177,5 +202,9 @@ def handle_user_input():
             student_management_command_handle(command)
 
 
-if __name__ == "__main__":
+def main():
     handle_user_input()
+
+
+if __name__ == "__main__":
+    main()
