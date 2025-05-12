@@ -78,7 +78,7 @@ storage: list[dict] = [
 
 # CRUD
 def add_student(student: dict) -> dict | None:
-    if len(student) != 3:
+    if len(student) != 4:
         return None
 
     if not student.get("name"):
@@ -128,24 +128,32 @@ def show_student(student_id: int) -> None:
 
 def ask_student_payload() -> dict:
     ask_prompt = (
-        "Enter student's payload data using text template: "
-        "John Doe;John Doe is 18 y.o. Interests: math\n"
-        "where 'John Doe' is a full name"
+        "Enter student's payload data using text template:\n"
+        "John Doe;Empty list of marks;John Doe is 18 y.o. Interests: math\n"
+        "where 'John Doe' is a full name\n"
+        "Empty list of marks is a list of marks (current version - empty, like a 'fullname;;optional info')\n"
         "and 'John Doe is 18 y.o. Interests: math' are optional info about student.\n"
-        "The data must be separated by ';'"
+        "The data must be separated by ';'\n"
+        ": "
     )
 
     def parse(data) -> dict:
         name, raw_marks, details = data.split(";")
 
         return {
+            "id": max(d["id"] for d in storage) + 1,
             "name": name,
-            "marks": [],
-            "info": details | "",
+            "marks": [], # for future not empty raw marks: [int(x.strip()) for x in raw_marks.split(',') if x.strip()]
+            "info": details if details else "",
         }
 
     user_data: str = input(ask_prompt)
-    return parse(user_data)
+    if user_data.count(";") == 2:
+        return parse(user_data)
+    else:
+        print("The student's data is NOT correct. Please try again")
+
+        return
 
 
 def student_management_command_handle(command: str):
@@ -169,7 +177,7 @@ def student_management_command_handle(command: str):
         if student_id:
             search_student(student_id=int(student_id))
         else:
-            print("Student's name is required to search")
+            print("Student's ID is required to search")
 
 
 def handle_user_input():
